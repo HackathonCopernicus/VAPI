@@ -1,0 +1,47 @@
+{% extends "generica.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h1>Fincas</h1>
+
+    <!-- Barra de búsqueda -->
+    <form method="get" action="">
+        <input type="text" name="buscar" placeholder="Buscar fincas..." value="{{ request.GET.buscar }}">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <!-- Lista de fincas -->
+    <div class="fincas-list">
+        {% for finca in object_list %}
+            <div class="finca-item">
+                <h2>{{ finca.nombre }}</h2>
+                <p>{{ finca.descripcion }}</p>
+                <a href="{% url 'detalle-finca' finca.id %}">Ver detalles</a> <!-- Asume que existe una vista de detalle -->
+            </div>
+        {% empty %}
+            <p>No se encontraron fincas.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if is_paginated %}
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}">Primera</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}">Anterior</a>
+                {% endif %}
+
+                <span class="current">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}">Siguiente</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}">Última</a>
+                {% endif %}
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

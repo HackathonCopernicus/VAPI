@@ -1,0 +1,168 @@
+{% extends "generica.html" %}
+{% load static %}
+
+{% block content %}
+<header>
+    <style>
+        /* Reseteo de márgenes y paddings */
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* El mapa ocupará toda la pantalla */
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+        /* Contenedor principal */
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Título */
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        /* Subtítulo */
+        h2 {
+            font-size: 2rem;
+            color: #2980b9;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Descripción */
+        p {
+            font-size: 1.3rem;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* Beneficios */
+        .benefits {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 40px;
+        }
+
+        .benefit {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 30%;
+            transition: transform 0.3s ease;
+        }
+
+        .benefit:hover {
+            transform: translateY(-10px);
+        }
+
+        .benefit h3 {
+            color: #2980b9;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .benefit p {
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        /* Botón CTA */
+        .btn {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            margin-top: 30px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2ecc71;
+            transform: scale(1.05);
+        }
+
+        /* Imagen del logo */
+        .logotipo {
+            max-width: 120px;
+            margin-bottom: 25px;
+        }
+
+        /* Animación */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Diseño Responsivo */
+        @media (max-width: 768px) {
+            .benefits {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .benefit {
+                width: 80%;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</header>
+
+<div class="container">
+    <!-- Logo -->
+    <img class="logotipo" src="{% static 'valdi.png' %}" alt="Logo VALDI">
+
+    <!-- Título principal -->
+    <h1>Bienvenido a VALDI</h1>
+
+    <!-- Subtítulo inspirador -->
+    <h2>La revolución tecnológica para la agricultura inteligente</h2>
+
+    <!-- Descripción detallada -->
+    <p>VALDI (Visión Agronómica Libre Digital e Interactiva) es una plataforma de gestión agronómica que combina la tecnología satelital de Sentinel de Copernicus con herramientas avanzadas de análisis para mejorar la toma de decisiones en el campo. Diseñada tanto para técnicos como para productores agrícolas, VALDI transforma datos complejos en información visual, accesible e interactiva.</p>
+
+    <!-- Beneficios destacados -->
+    <div class="benefits">
+        <div class="benefit">
+            <h3>Monitoreo Satelital en Tiempo Real</h3>
+            <p>Accede a imágenes satelitales actualizadas de tus cultivos y recibe alertas sobre el estado de tus tierras en tiempo real, gracias a la integración con la plataforma Sentinel de Copernicus.</p>
+        </div>
+        <div class="benefit">
+            <h3>Optimización de Recursos</h3>
+            <p>Integra sensores y datos satelitales para implementar sistemas de riego y manejo de recursos más eficientes, ahorrando agua y optimizando los insumos de producción.</p>
+        </div>
+        <div class="benefit">
+            <h3>Análisis de Datos Interactivo</h3>
+            <p>Obtén informes detallados sobre la salud del suelo, pronósticos de rendimiento y análisis históricos, todo accesible de forma interactiva para ayudarte a maximizar tu productividad.</p>
+        </div>
+    </div>
+
+    <!-- Botón de llamada a la acción -->
+    <a href="#" class="btn">Explorar VALDI</a>
+</div>
+
+{% endblock %}

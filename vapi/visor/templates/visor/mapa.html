@@ -1,0 +1,291 @@
+{% extends "generica.html" %}
+{% load static %}
+
+{% block content %}
+<header>
+    <!-- Estilos personalizados -->
+    <style>
+        /* Reseteo de márgenes y paddings */
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* El mapa ocupará toda la pantalla */
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        #map {
+            height: calc(100vh - 51px);
+            width: 100%;
+        }
+
+        .hidden {
+            transform: translateX(100%); /* Mueve el panel fuera de la pantalla */
+            opacity: 0; /* Hace que el panel desaparezca visualmente */
+            pointer-events: none; /* Evita la interacción con el panel cuando está oculto */
+            
+        }
+        .panel {
+            position: absolute;
+            top: 60px;
+            left: calc(50% - 290px);
+            width: 580px;
+            height: 35px;
+            /* background-color: rgba(233, 233, 233, 0.658); */
+            border-radius: 5px;
+            z-index: 999;
+            padding: 10px;
+        }
+
+        .botonA {
+            background-color: rgba(21, 65, 187, 0.651);
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            padding: 5px 20px;
+            border: 2px solid rgba(37, 37, 37, 0.788);
+            border-radius: 10px;
+            font-size: 20px;
+            transition: background-color 0.3s;
+            position: relative;
+            margin-left: 10px;
+        }
+
+        .botonA:hover {
+            color: rgba(37, 37, 37, 0.788);
+            background-color: rgba(245, 243, 243, 0.712);
+        }
+
+        #toolbarMapa {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            height: calc(100vh - 81px);
+            width: 20%;
+            min-width: 220px;
+            z-index: 1000;
+            background-color: rgba(245, 245, 245, 0.85); /* Fondo casi blanco */
+            padding: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra más suave */
+            transition: transform 0.3s ease-in-out, opacity 0.4s ease-in-out;
+            opacity: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .toolbar-header {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .toolbar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Separación entre los botones */
+        }
+
+        .botonB {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Separación entre icono y texto */
+            background-color: rgba(0, 123, 255, 0.85); /* Color azul más sólido */
+            color: white; /* Texto en blanco */
+            border: none; /* Sin borde */
+            padding: 12px 25px; /* Padding interno */
+            border-radius: 8px; /* Bordes redondeados */
+            cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+            font-size: 16px; /* Tamaño de fuente */
+            font-weight: bold; /* Texto en negrita */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra para darle profundidad */
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
+        }
+
+        .botonB:hover {
+            background-color: rgba(0, 123, 255, 1); /* Color más oscuro al hacer hover */
+            transform: translateY(-3px); /* Efecto de levantarse al hacer hover */
+        }
+
+        .botonB i {
+            font-size: 18px; /* Tamaño de los íconos */
+        }
+
+        .botonB:active {
+            transform: translateY(0); /* Restaura la posición al hacer clic */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra reducida al hacer clic */
+        }
+
+    </style>
+</header>
+
+<!-- Div para el mapa -->
+<div id="map"></div>
+<div class="panel">
+    <button id="botonA" class="botonA">Info</button>
+    <button id="botonA" class="botonA">Indices</button>
+    <button id="botonA" class="botonA">Acceso</button>
+    <button id="botonA" class="botonA">Notas</button>
+    <button id="botonA" class="botonA">IoT</button>
+</div>
+
+
+<div id="toolbarMapa">
+    <h3 class="toolbar-header">Índices de Vegetación</h3>
+    
+    <div class="toolbar-section">
+        <button class="botonB" id="ndviButton">
+            <i class="fas fa-leaf"></i> NDVI (Índice Vegetación)
+        </button>
+        <button class="botonB" id="eviButton">
+            <i class="fas fa-tree"></i> EVI (Índice Mejorado)
+        </button>
+        <button class="botonB" id="saviButton">
+            <i class="fas fa-seedling"></i> SAVI (Índice de Suelo)
+        </button>
+        <button class="botonB" id="gciButton">
+            <i class="fas fa-sun"></i> GCI (Índice Clorofila)
+        </button>
+        <button class="botonB" id="ndwiButton">
+            <i class="fas fa-water"></i> NDWI (Índice de Agua)
+        </button>
+    </div>
+</div>
+
+
+
+<!-- Contenedor para el botón -->
+<!-- <div id="controls">
+    
+</div> -->
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
+
+<!-- Script para inicializar el mapa -->
+<script>
+    // Toggle para mostrar/ocultar el panel
+    document.getElementById('botonA').addEventListener('click', function() {
+        var toolbar = document.getElementById('toolbarMapa');
+        var boton = document.getElementById('botonA');
+
+        if (toolbar.classList.contains('hidden')) {
+            toolbar.classList.remove('hidden');
+            boton.textContent = 'Info'; // Cambia el texto
+        } else {
+            toolbar.classList.add('hidden');
+            boton.textContent = 'Info'; // Cambia el texto
+        }
+    });
+
+    // Inicializamos el mapa centrado en Costa Rica
+    var map = L.map('map').setView([9.7489, -83.7534], 8); // Coordenadas centradas en Costa Rica
+
+    // Añadimos el mapa base de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Añadir las herramientas de dibujo para seleccionar un área
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+        draw: {
+            polygon: true, // Habilitar dibujo de polígonos
+            marker: false,
+            polyline: false,
+            circle: false,
+            rectangle: true // Habilitar dibujo de rectángulos (bounds)
+        },
+        edit: {
+            featureGroup: drawnItems
+        }
+    });
+    map.addControl(drawControl);
+
+    // Variables para almacenar los límites del área seleccionada
+    var bounds;
+
+    // Evento que se activa cuando se dibuja una nueva área
+    map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+
+        // Si es un rectángulo, obtenemos los bounds
+        if (layer instanceof L.Rectangle) {
+            bounds = layer.getBounds();
+            console.log("Bounds seleccionados: ", bounds);
+        }
+
+        drawnItems.addLayer(layer); // Añadir la capa dibujada al mapa
+    });
+
+    // Función para convertir los bounds a un formato adecuado para el servidor (GEE)
+    function boundsToGeoJSON(bounds) {
+        return {
+            "type": "Polygon",
+            "coordinates": [[
+                [bounds.getSouthWest().lng, bounds.getSouthWest().lat],
+                [bounds.getNorthWest().lng, bounds.getNorthWest().lat],
+                [bounds.getNorthEast().lng, bounds.getNorthEast().lat],
+                [bounds.getSouthEast().lng, bounds.getSouthEast().lat],
+                [bounds.getSouthWest().lng, bounds.getSouthWest().lat]
+            ]]
+        };
+    }
+
+    // Función para cargar el mapa de NDVI como una capa adicional
+    document.getElementById('ndviButton').onclick = function () {
+    if (!bounds) {
+        alert("Por favor, selecciona un área primero.");
+        return;
+    }
+
+    var boundsGeoJSON = boundsToGeoJSON(bounds);
+    console.log("GeoJSON de los bounds: ", boundsGeoJSON);
+
+    fetch("{% url 'ndvi_view' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ bounds: boundsGeoJSON })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.ndvi_url) {
+            // Añadir la capa de NDVI como teselas
+            var ndviLayer = L.tileLayer.wms(data.ndvi_url, {
+                layers: 'NDVI',
+                format: 'image/png',
+                transparent: true,
+                attribution: 'Datos de NDVI de Sentinel Hub'
+            }).addTo(map);
+        } else {
+            console.error('No se recibió una URL válida para el mapa NDVI.');
+        }
+    })
+    .catch(error => {
+        console.error('Error al obtener el mapa NDVI:', error);
+    });
+};
+
+</script>
+
+{% endblock %}
+
