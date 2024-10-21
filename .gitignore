@@ -1,0 +1,35 @@
+vapi/media/archivo/*
+vapi/media/slides/*
+**/migrations/*
+venv/*
+.env/
+
+!vapi/media/archivo/
+!vapi/media/slides/
+!**/migrations/
+!**/migrations/__init__.py
+!venv/
+vapi/docs
+
+
+# Ignorar archivos y carpetas específicos
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite
+*.log
+
+# Ignorar archivos generados por el sistema
+.DS_Store
+Thumbs.db
+
+
+# Ignora archivos generados automáticamente por el sistema operativo
+.DS_Store
+
+
+# Ignora archivos locales de configuración
+local_settings.py
+
